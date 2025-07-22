@@ -245,3 +245,16 @@ hr {
 * {
     box-sizing: border-box;
 }
+
+#volumeBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 24px;
+    padding: 10px;
+    border-radius: 50%;
+    border: none;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+}
