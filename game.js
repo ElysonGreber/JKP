@@ -107,27 +107,82 @@ const abiERC20 = [{
 ];
 
 let web3, contrato, token, conta;
-
 async function conectar() {
-    if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        await ethereum.request({
-            method: "eth_requestAccounts",
-        });
-        const contas = await web3.eth.getAccounts();
-        conta = contas[0];
-        document.getElementById("conta").innerText = conta;
-
-        contrato = new web3.eth.Contract(abiContrato, CONTRACT_ADDRESS);
-        token = new web3.eth.Contract(abiERC20, TOKEN_ADDRESS);
-    } else {
+    if (!window.ethereum) {
         alert("Instale o Metamask.");
+        return;
     }
+
+    web3 = new Web3(window.ethereum);
+
+    try {
+        // Solicita conexão da carteira
+        await ethereum.request({ method: "eth_requestAccounts" });
+
+        // Força a rede Sepolia (chainId 11155111 -> 0xaa36a7)
+        await ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0xaa36a7" }],
+        });
+    } catch (err) {
+        // Se a rede Sepolia ainda não estiver adicionada ao MetaMask
+        if (err.code === 4902) {
+            try {
+                await ethereum.request({
+                    method: "wallet_addEthereumChain",
+                    params: [{
+                        chainId: "0xaa36a7",
+                        chainName: "Sepolia Testnet",
+                        nativeCurrency: {
+                            name: "SepoliaETH",
+                            symbol: "ETH",
+                            decimals: 18,
+                        },
+                        rpcUrls: ["https://rpc.sepolia.org"],
+                        blockExplorerUrls: ["https://sepolia.etherscan.io"],
+                    }],
+                });
+            } catch (addErr) {
+                console.error("Erro ao adicionar rede Sepolia:", addErr);
+                return;
+            }
+        } else {
+            console.error("Erro ao mudar de rede:", err);
+            return;
+        }
+    }
+
+    // Continua após conectar e garantir que está na rede correta
+    const contas = await web3.eth.getAccounts();
+    conta = contas[0];
+    document.getElementById("conta").innerText = conta;
+
     contrato = new web3.eth.Contract(abiContrato, CONTRACT_ADDRESS);
     token = new web3.eth.Contract(abiERC20, TOKEN_ADDRESS);
 
-    await atualizarSaldos(); // <- chama aqui depois de conectar
+    await atualizarSaldos();
 }
+
+// async function conectar() {
+//     if (window.ethereum) {
+//         web3 = new Web3(window.ethereum);
+//         await ethereum.request({
+//             method: "eth_requestAccounts",
+//         });
+//         const contas = await web3.eth.getAccounts();
+//         conta = contas[0];
+//         document.getElementById("conta").innerText = conta;
+
+//         contrato = new web3.eth.Contract(abiContrato, CONTRACT_ADDRESS);
+//         token = new web3.eth.Contract(abiERC20, TOKEN_ADDRESS);
+//     } else {
+//         alert("Instale o Metamask.");
+//     }
+//     contrato = new web3.eth.Contract(abiContrato, CONTRACT_ADDRESS);
+//     token = new web3.eth.Contract(abiERC20, TOKEN_ADDRESS);
+
+//     await atualizarSaldos(); // <- chama aqui depois de conectar
+// }
 
 async function pagar() {
     const valor = web3.utils.toWei("1", "ether");
