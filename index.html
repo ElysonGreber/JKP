@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pedra Papel Tesoura - Sepolia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Carattere&family=Grand+Hotel&family=Pacifico&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Carattere&family=Grand+Hotel&family=Maven+Pro:wght@400..900&family=Pacifico&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="jogo.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <script src="game.js"></script>
+    <script src="buy.js"></script>
+</head>
+
+<body>
+    <section class="foldcontainer">
+        <div class="layer" id="cloud2"></div>
+        <div class="layer" id="cloud1"></div>
+        <h1 style="text-shadow: 0 3px 0 #03ff25, 0 8px 0 #e3dc09; z-index: 3;">じゃんけんぽん</h1>
+    </section>
+    <p style="color: rgb(2, 30, 63);">jankenpon</p>
+    <hr>
+
+    <button onclick="conectar()" class="eightbit-btn">Wallet Connect</button>
+    <p style="font-family: 'Press Start 2P' , cursive; font-size: 12px; margin-bottom: 0px;"><span id="conta">Disconnected</span><br><span id="saldo-eth"></span> <span id="saldo-token"></span></p>
+    <span id="saldo-eth"></span> <span id="saldo-token"></span>
+    <hr>
+    <button onclick="comprarToken()" class="eightbit-btn">Take $JKP</button>
+    <button onclick="pagar()" class="eightbit-btn">Bet 01 $JKP</button>
+    <button onclick="sacar()" class="eightbit-btn">Prize</button>
+
+    <hr>
+
+    <h3>Make your choice</h3>
+    <button onclick="jogar(0)" class="eightbit-btn"><img src="img/sprite_1.png" alt=""></button>
+    <button onclick="jogar(1)" class="eightbit-btn"><img src="img/sprite_0.png" alt=""></button>
+    <button onclick="jogar(2)" class="eightbit-btn"><img src="img/sprite_2.png" alt=""></button>
+    <hr>
+
+    <p id="tx-hash" style="font-family: 'Press Start 2P' , cursive; font-size: 12px; margin-bottom: 0px; z-index: 5;"></p>
+
+    <div id="spinner" style="z-index: 4;position: relative;"><img src="img/hands.gif" alt=""></div>
+    <div id="resultado" style="z-index: 4;position: relative;font-family: 'Press Start 2P', 
+        cursive;font-size: 25px; margin-bottom: 0px;margin-top: 5px;
+        text-shadow: 0 3px 0 #03ff25, 0 8px 0 #e3dc09;">
+    </div>
+    <div id="duelo" style="display:none; text-align:center;">
+        <img id="img-jogador" src="" alt="Escolha do jogador" style="height:100px; width: 100px; display: none;">
+        <br>
+        <span id="duelo-texto"></span>
+    </div>
+    <div class="layer" id="cityBack" style="background-position-y: 100%;"></div>
+    <div class="layer" id="city" style="background-position-y: 100%;"></div>
+</body>
+
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pedra Papel Tesoura - Sepolia</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        
+        button {
+            margin: 5px;
+            padding: 10px;
+        }
+        
+        #resultado {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎮 Pedra Papel Tesoura (Sepolia)</h1>
+
+    <button onclick="conectar()">🔌 Conectar Metamask</button>
+    <p>Conta: <span id="conta">Desconectado</span></p>
+
+    <hr>
+
+    <button onclick="pagar()">💰 Pagar 1 Token</button>
+
+    <h3>Escolha sua jogada:</h3>
+    <button onclick="jogar(0)">🪨 Pedra</button>
+    <button onclick="jogar(1)">📄 Papel</button>
+    <button onclick="jogar(2)">✂️ Tesoura</button>
+
+    <button onclick="sacar()">🏆 Sacar Prêmio</button>
+
+    <div id="resultado"></div>
+
+    <script>
+        const CONTRACT_ADDRESS = "0x3Ca407D331D4d1175940f64d329cDB374eA99c90";
+        const TOKEN_ADDRESS = "0x5DDED6D293111FD9967ED2835Ce905B1eb2c023E";
+
+        const abiContrato = [ // Fragmento da ABI com funções usadas
+            {
+                "inputs": [],
+                "name": "pagarParaJogar",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }, {
+                "inputs": [{
+                    "internalType": "uint8",
+                    "name": "escolha",
+                    "type": "uint8"
+                }],
+                "name": "jogar",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }, {
+                "inputs": [],
+                "name": "sacarPremio",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }, {
+                "inputs": [{
+                    "internalType": "address",
+                    "name": "jogador",
+                    "type": "address"
+                }],
+                "name": "verUltimoResultado",
+                "outputs": [{
+                    "internalType": "uint8",
+                    "name": "",
+                    "type": "uint8"
+                }],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const abiERC20 = [{
+            "constant": false,
+            "inputs": [{
+                "name": "spender",
+                "type": "address"
+            }, {
+                "name": "value",
+                "type": "uint256"
+            }],
+            "name": "approve",
+            "outputs": [{
+                "name": "",
+                "type": "bool"
+            }],
+            "type": "function"
+        }, {
+            "constant": true,
+            "inputs": [{
+                "name": "owner",
+                "type": "address"
+            }],
+            "name": "balanceOf",
+            "outputs": [{
+                "name": "",
+                "type": "uint256"
+            }],
+            "type": "function"
+        }];
+
+        let web3, contrato, token, conta;
+
+        async function conectar() {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+                const contas = await web3.eth.getAccounts();
+                conta = contas[0];
+                document.getElementById("conta").innerText = conta;
+
+                contrato = new web3.eth.Contract(abiContrato, CONTRACT_ADDRESS);
+                token = new web3.eth.Contract(abiERC20, TOKEN_ADDRESS);
+            } else {
+                alert("Instale o Metamask.");
+            }
+        }
+
+        async function pagar() {
+            const valor = web3.utils.toWei("1", "ether"); // 1 token (18 decimais)
+            try {
+                await token.methods.approve(CONTRACT_ADDRESS, valor).send({
+                    from: conta
+                });
+                await contrato.methods.pagarParaJogar().send({
+                    from: conta
+                });
+                alert("Pagamento realizado. Agora jogue!");
+            } catch (e) {
+                console.error(e);
+                alert("Erro no pagamento.");
+            }
+        }
+
+        async function jogar(escolha) {
+            try {
+                await contrato.methods.jogar(escolha).send({
+                    from: conta
+                });
+                const resultado = await contrato.methods.verUltimoResultado(conta).call();
+                mostrarResultado(resultado);
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao jogar.");
+            }
+        }
+
+        async function sacar() {
+            try {
+                await contrato.methods.sacarPremio().send({
+                    from: conta
+                });
+                alert("Prêmio sacado!");
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao sacar prêmio.");
+            }
+        }
+
+        function mostrarResultado(resultado) {
+            const r = parseInt(resultado);
+            const txt = ["❌ Derrota", "🤝 Empate", "🏆 Vitória"];
+            document.getElementById("resultado").innerText = "Resultado: " + txt[r];
+        }
+    </script>
+</body>
+
+</html> -->
