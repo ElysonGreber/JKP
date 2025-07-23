@@ -179,11 +179,11 @@ async function conectar() {
                     }],
                 });
             } catch (addErr) {
-                console.error("Erro ao adicionar rede Sepolia:", addErr);
+                console.error("Error adding Sepolia network:", addErr);
                 return;
             }
         } else {
-            console.error("Erro ao mudar de rede:", err);
+            console.error("Error switching network:", err);
             return;
         }
     }
@@ -232,10 +232,10 @@ async function pagar() {
         await contrato.methods.pagarParaJogar().send({
             from: conta,
         });
-        alert("Pagamento realizado. Agora jogue!");
+        alert("Payment completed. Now play!");
     } catch (e) {
         console.error(e);
-        alert("Erro no pagamento.");
+        alert("Payment error");
     }
 }
 
@@ -305,7 +305,7 @@ async function jogar(escolha) {
             });
     } catch (e) {
         console.error(e);
-        alert("Erro ao jogar.");
+        alert("Error playing the game");
     } finally {
         spinner.style.display = "none";
     }
@@ -323,7 +323,7 @@ async function buscarUltimoEventoDaConta(conta) {
         });
 
         if (eventos.length === 0) {
-            console.log("Nenhum evento encontrado.");
+            console.log("No event found.");
             return null;
         }
 
@@ -335,7 +335,7 @@ async function buscarUltimoEventoDaConta(conta) {
             contratoEscolha: parseInt(dados.contratoEscolha),
         };
     } catch (e) {
-        console.error("Erro ao buscar eventos:", e);
+        console.error("Error fetching events:", e);
         return null;
     }
 }
@@ -346,10 +346,10 @@ async function sacar() {
         await contrato.methods.sacarPremio().send({
             from: conta,
         });
-        alert("Prêmio sacado!");
+        alert("Prize withdrawn!");
     } catch (e) {
         console.error(e);
-        alert("Erro ao sacar prêmio.");
+        alert("Error withdrawing prize.");
     }
 }
 

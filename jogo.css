@@ -271,5 +271,26 @@ table {
     text-align: left;
     display: inline-table;
     border-spacing: 35px 1px;
-    border-top: dotted rgb(0, 0, 0);
+    border: dotted rgb(0, 0, 0);
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    z-index: 10;
+    position: relative;
+    font-size: 15px;
+}
+
+a:visited {
+    color: black;
+}
+
+a:hover {
+    color: #28562f;
+}
+
+h3 {
+    position: relative;
+    z-index: 10;
 }
