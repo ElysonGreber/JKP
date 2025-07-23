@@ -270,8 +270,9 @@ table {
     position: relative;
     text-align: left;
     display: inline-table;
-    border-spacing: 35px 1px;
+    border-spacing: 33px 1px;
     border: dotted rgb(0, 0, 0);
+    background-color: #cccccc78;
 }
 
 a {
