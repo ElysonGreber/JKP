@@ -428,3 +428,11 @@ function alternarTabela() {
 function mostrarBotaoHistorico() {
     document.getElementById("btn-historico").style.display = "inline-block";
 }
+
+function abrirModal() {
+    document.getElementById("popupModal").style.display = "block";
+}
+
+function fecharModal() {
+    document.getElementById("popupModal").style.display = "none";
+}

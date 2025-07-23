@@ -23,14 +23,6 @@
     </section>
     <p style="color: rgb(2, 30, 63);">jankenpon</p>
     <hr>
-    <!-- Áudio autoplay e silenciado -->
-    <audio id="musicaFundo" autoplay loop muted>
-    <source src="audio.mp3" type="audio/mpeg">
-    Seu navegador não suporta áudio.
-  </audio>
-
-    <!-- Botão de controle de volume -->
-    <button id="volumeBtn" style="z-index: 10;">🔇</button>
     <button onclick="conectar()" class="eightbit-btn">Wallet Connect</button>
     <p style="font-family: 'Press Start 2P' , cursive; font-size: 12px; margin-bottom: 0px;"><span id="conta">Disconnected</span><br><span id="saldo-eth"></span> <span id="saldo-token"></span></p>
     <span id="saldo-eth"></span> <span id="saldo-token"></span>
@@ -44,6 +36,7 @@
     </div>
     <hr>
     <button onclick="comprarToken()" class="eightbit-btn">Take $JKP</button>
+    <button onclick="abrirModal()" class="eightbit-btn" style="position: relative; z-index: 20;">Buy on Uniswap</button>
     <button onclick="pagar()" class="eightbit-btn">Bet 01 $JKP</button>
     <button onclick="sacar()" class="eightbit-btn">Prize</button>
 
@@ -67,218 +60,14 @@
         <br>
         <span id="duelo-texto"></span>
     </div>
-
     <div class="layer" id="cityBack" style="background-position-y: 100%;"></div>
     <div class="layer" id="city" style="background-position-y: 100%;"></div>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const audio = document.getElementById("musicaFundo");
-            const volumeBtn = document.getElementById("volumeBtn");
-
-            // Alternar mute/unmute
-            volumeBtn.addEventListener("click", () => {
-                audio.muted = !audio.muted;
-                volumeBtn.textContent = audio.muted ? "🔇" : "🔊";
-            });
-
-            // Tocar de fato (com som) após interação do usuário
-            window.addEventListener("click", () => {
-                if (audio.muted) return;
-                audio.play().catch(e => {
-                    console.warn("Autoplay bloqueado até interação do usuário.");
-                });
-            }, {
-                once: true
-            });
-        });
-    </script>
+    <div id="popupModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6);">
+        <div style="position:relative; margin:5% auto; padding:0; background:0; width:90%; max-width:700px; border-radius:8px; overflow:hidden;">
+            <button onclick="fecharModal()" style="position:absolute; top:10px; right:10px; background:red; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">X</button>
+            <iframe src="https://app.uniswap.org/explore/tokens/ethereum_sepolia/0x5dded6d293111fd9967ed2835ce905b1eb2c023e" style="width:100%; height:600px; border:none;"></iframe>
+        </div>
+    </div>
 </body>
 
 </html>
-
-<!-- <!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Pedra Papel Tesoura - Sepolia</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-        }
-        
-        button {
-            margin: 5px;
-            padding: 10px;
-        }
-        
-        #resultado {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
-</head>
-
-<body>
-    <h1>🎮 Pedra Papel Tesoura (Sepolia)</h1>
-
-    <button onclick="conectar()">🔌 Conectar Metamask</button>
-    <p>Conta: <span id="conta">Desconectado</span></p>
-
-    <hr>
-
-    <button onclick="pagar()">💰 Pagar 1 Token</button>
-
-    <h3>Escolha sua jogada:</h3>
-    <button onclick="jogar(0)">🪨 Pedra</button>
-    <button onclick="jogar(1)">📄 Papel</button>
-    <button onclick="jogar(2)">✂️ Tesoura</button>
-
-    <button onclick="sacar()">🏆 Sacar Prêmio</button>
-
-    <div id="resultado"></div>
-
-    <script>
-        const CONTRACT_ADDRESS = "0x3Ca407D331D4d1175940f64d329cDB374eA99c90";
-        const TOKEN_ADDRESS = "0x5DDED6D293111FD9967ED2835Ce905B1eb2c023E";
-
-        const abiContrato = [ // Fragmento da ABI com funções usadas
-            {
-                "inputs": [],
-                "name": "pagarParaJogar",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }, {
-                "inputs": [{
-                    "internalType": "uint8",
-                    "name": "escolha",
-                    "type": "uint8"
-                }],
-                "name": "jogar",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }, {
-                "inputs": [],
-                "name": "sacarPremio",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }, {
-                "inputs": [{
-                    "internalType": "address",
-                    "name": "jogador",
-                    "type": "address"
-                }],
-                "name": "verUltimoResultado",
-                "outputs": [{
-                    "internalType": "uint8",
-                    "name": "",
-                    "type": "uint8"
-                }],
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
-
-        const abiERC20 = [{
-            "constant": false,
-            "inputs": [{
-                "name": "spender",
-                "type": "address"
-            }, {
-                "name": "value",
-                "type": "uint256"
-            }],
-            "name": "approve",
-            "outputs": [{
-                "name": "",
-                "type": "bool"
-            }],
-            "type": "function"
-        }, {
-            "constant": true,
-            "inputs": [{
-                "name": "owner",
-                "type": "address"
-            }],
-            "name": "balanceOf",
-            "outputs": [{
-                "name": "",
-                "type": "uint256"
-            }],
-            "type": "function"
-        }];
-
-        let web3, contrato, token, conta;
-
-        async function conectar() {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                await ethereum.request({
-                    method: 'eth_requestAccounts'
-                });
-                const contas = await web3.eth.getAccounts();
-                conta = contas[0];
-                document.getElementById("conta").innerText = conta;
-
-                contrato = new web3.eth.Contract(abiContrato, CONTRACT_ADDRESS);
-                token = new web3.eth.Contract(abiERC20, TOKEN_ADDRESS);
-            } else {
-                alert("Instale o Metamask.");
-            }
-        }
-
-        async function pagar() {
-            const valor = web3.utils.toWei("1", "ether"); // 1 token (18 decimais)
-            try {
-                await token.methods.approve(CONTRACT_ADDRESS, valor).send({
-                    from: conta
-                });
-                await contrato.methods.pagarParaJogar().send({
-                    from: conta
-                });
-                alert("Pagamento realizado. Agora jogue!");
-            } catch (e) {
-                console.error(e);
-                alert("Erro no pagamento.");
-            }
-        }
-
-        async function jogar(escolha) {
-            try {
-                await contrato.methods.jogar(escolha).send({
-                    from: conta
-                });
-                const resultado = await contrato.methods.verUltimoResultado(conta).call();
-                mostrarResultado(resultado);
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao jogar.");
-            }
-        }
-
-        async function sacar() {
-            try {
-                await contrato.methods.sacarPremio().send({
-                    from: conta
-                });
-                alert("Prêmio sacado!");
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao sacar prêmio.");
-            }
-        }
-
-        function mostrarResultado(resultado) {
-            const r = parseInt(resultado);
-            const txt = ["❌ Derrota", "🤝 Empate", "🏆 Vitória"];
-            document.getElementById("resultado").innerText = "Resultado: " + txt[r];
-        }
-    </script>
-</body>
-
-</html> -->
