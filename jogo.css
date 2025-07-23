@@ -258,3 +258,18 @@ hr {
     color: white;
     cursor: pointer;
 }
+
+caption {
+    font-size: 12px;
+    font-family: 'Press Start 2P';
+    margin-bottom: 8px;
+}
+
+table {
+    z-index: 10;
+    position: relative;
+    text-align: left;
+    display: inline-table;
+    border-spacing: 35px 1px;
+    border-top: dotted rgb(0, 0, 0);
+}

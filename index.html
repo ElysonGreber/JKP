@@ -31,10 +31,17 @@
 
     <!-- Botão de controle de volume -->
     <button id="volumeBtn" style="z-index: 10;">🔇</button>
-    <hr>
     <button onclick="conectar()" class="eightbit-btn">Wallet Connect</button>
     <p style="font-family: 'Press Start 2P' , cursive; font-size: 12px; margin-bottom: 0px;"><span id="conta">Disconnected</span><br><span id="saldo-eth"></span> <span id="saldo-token"></span></p>
     <span id="saldo-eth"></span> <span id="saldo-token"></span>
+    <div>
+        <button id="btn-historico" onclick="alternarTabela()" style="display: inline-block;position: relative;z-index: 10;background: 0;border: 0;font-size: 12px;font-family: 'Press Start 2P';">
+            Played Games History
+        </button>
+        <div id="historico-container" style="display: none;">
+            <table id="historico"></table>
+        </div>
+    </div>
     <hr>
     <button onclick="comprarToken()" class="eightbit-btn">Take $JKP</button>
     <button onclick="pagar()" class="eightbit-btn">Bet 01 $JKP</button>
@@ -60,6 +67,7 @@
         <br>
         <span id="duelo-texto"></span>
     </div>
+
     <div class="layer" id="cityBack" style="background-position-y: 100%;"></div>
     <div class="layer" id="city" style="background-position-y: 100%;"></div>
     <script>
